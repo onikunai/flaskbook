@@ -1,0 +1,66 @@
+from pathlib import Path 
+from flask import Flask
+from flask_login import LoginManager
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
+from apps.config import config
+
+db = SQLAlchemy() # SQLAlchemyをインスタンス化する
+csrf = CSRFProtect()
+
+login_manager = LoginManager() # LoginManagerをインスタンス化する
+login_manager.login_view = "auth.signup" # login_view属性に未ログイン時にリダイレクトするエンドポイントを指定する
+
+# login_message属性にログイン後に表示するメッセージを指定する
+# ここでは何も表示しないよう空を指定する
+login_manager.login_message = ""
+
+# create_app関数を作成する
+def create_app(config_key):
+    # Flaskインスタンス生成
+    app = Flask(__name__)
+    
+    # config_keyにマッチする環境のコンフィグクラスを読み込む
+    app.config.from_object(config[config_key])
+    
+    # # アプリのコンフィグ設定をする
+    # app.config.from_mapping(
+    #     SECRET_KEY="2AZSMss3p5QPbcY2hBsJ",
+    #     SQLALCHEMY_DATABASE_URI=
+    #     f"sqlite:///{Path(__file__).parent.parent / 'local.sqlite'}",
+    #     SQLALCHEMY_TRACK_MODIFICATIONS=False,
+    #     SQLALCHEMY_ECHO=True, # SQLをコンソールログ出力する設定
+    #     WTF_CSRF_SECRET_KEY="AuwzyszU5sugKN7KZs6f",
+    # )
+    
+    csrf.init_app(app)
+    
+    # SQLAlchemyとアプリを連携する
+    db.init_app(app)
+    
+    # Migrateとアプリを連携する
+    Migrate(app, db)
+    
+    # login_managerをアプリケーションと連携する
+    login_manager.init_app(app)
+    
+    # crudパッケージからviewsをimportする
+    from apps.crud import views as crud_views
+    
+    # register_blueprintを使いviewsのcrudをアプリへ登録する
+    app.register_blueprint(crud_views.crud, url_prefix="/crud")
+    
+    # これから作成するauthパッケージからviewsをimportする
+    from apps.auth import views as auth_views
+    
+    # register_blueprintを使いviewsのauthをアプリへ登録する
+    app.register_blueprint(auth_views.auth, url_prefix="/auth")
+    
+    # これから作成するdetectorパッケージからviewsをimportする
+    from apps.detector import views as dt_views
+    
+    # register_blueprintを使いviewsのdtをアプリへ登録する
+    app.register_blueprint(dt_views.dt)
+    
+    return app

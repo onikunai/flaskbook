@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 basedir = Path(__file__).parent.parent
@@ -7,6 +8,8 @@ class BaseConfig:
     SECRET_KEY = "2AZSMss3p5QPbcY2hBsJ"
     WTF_CSRF_SECRET_KEY = "AuwzyszU5sugKN7KZs6f"
     UPLOAD_FOLDER = str(Path(basedir, "apps", "images")) # 画像アップロード先にapps/imagesを指定する
+    os.mkdir(UPLOAD_FOLDER, exist_ok=True)
+    
     # 物体検知に利用するラベル
     LABELS = [
         "unlabeled",
@@ -113,6 +116,8 @@ class TestingConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{basedir / 'testing.sqlite'}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False
+    UPLOAD_FOLDER = str(Path(basedir, "tests", "detector", "images")) # 画像アップロード先にtests/detector/imagesを指定する
+    os.mkdir(UPLOAD_FOLDER, exist_ok=True)
     
 # config辞書にマッピングする
 config = {

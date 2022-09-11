@@ -326,3 +326,7 @@ def search():
         # 画像削除フォームをテンプレートに渡す
         delete_form=delete_form,
     )
+
+@dt.errorhandler(404)
+def page_not_found(e):
+    return render_template("detector/404.html"), 404

@@ -19,7 +19,7 @@ def index():
 
 @auth.route("/signup", methods=["GET", "POST"])
 def signup():
-    print("singupだよ")
+    # print("singupだよ")
     # SignUpFormをインスタンス化する
     form = SignUpForm()
     
@@ -52,7 +52,7 @@ def signup():
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
-    print("loginだよ")
+    # print("loginだよ")
     form = LoginForm()
     if form.validate_on_submit():
         # メールアドレスからユーザーを取得する
@@ -70,6 +70,6 @@ def login():
 
 @auth.route("/logout")
 def logout():
-    print("logoutだよ")
+    # print("logoutだよ")
     logout_user()
     return redirect(url_for("auth.login"))

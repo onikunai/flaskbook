@@ -20,8 +20,8 @@ def fixture_app():
     with app.app_context():
         db.create_all()
     
-    # # テスト用の画像アップロードディレクトリを作成する
-    # os.mkdir(app.config["UPLOAD_FOLDER"], exist_ok=True)
+    # テスト用の画像アップロードディレクトリを作成する
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
     
     # テストを実行する
     yield app
@@ -37,12 +37,12 @@ def fixture_app():
     UserImageTag.query.delete()
     
     # テスト用の画像アップロードディレクトリを削除する
-    shutil.retree(app.config["UPLOAD_FOLDER"])
+    shutil.rmtree(app.config["UPLOAD_FOLDER"])
     
     db.session.commit()
     
 # Flaskのテストクライアントを返すフィクスチャ関数を作成する
 @pytest.fixture
-def client(fixture_ap):
+def client(fixture_app):
     # Flaskのテスト用クライアントを返す
     return fixture_app.test_client()
